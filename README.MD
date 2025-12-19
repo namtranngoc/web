@@ -31,3 +31,4 @@ python manage.py runserver
 npm install
 npm install -D @tailwindcss/typography
 npm run dev# ok
+# web
