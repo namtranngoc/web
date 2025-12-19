@@ -22,7 +22,7 @@ class ServiceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Service
-        fields = ['id', 'title', 'description', 'image', 'icon_name', 'order']
+        fields = ['id', 'title', 'description', 'image', 'order']
 
     def get_image(self, obj):
         if obj.image:
