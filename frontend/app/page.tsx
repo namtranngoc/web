@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-// 1. Hàm lấy bài viết (Giữ nguyên)
+// 1. Hàm lấy bài viết
 async function getPosts(q?: string) {
   const url = q
     ? `https://namtranngoc.pythonanywhere.com/api/posts/?q=${encodeURIComponent(q)}`
@@ -10,6 +10,7 @@ async function getPosts(q?: string) {
   if (!res.ok) return [];
   return res.json();
 }
+// Hàm lấy dịch vụ
 async function getServices(q?: string) {
   const url = q
     ? `https://namtranngoc.pythonanywhere.com/api/services/?q=${encodeURIComponent(q)}`
@@ -19,15 +20,7 @@ async function getServices(q?: string) {
   if (!res.ok) return [];
   return res.json();
 }
-// // 2. Hàm lấy dịch vụ (Thêm mới)
-// async function getServices() {
-//   const res = await fetch("https://namtranngoc.pythonanywhere.com/api/posts/services/", {
-//     cache: "no-store",
-//   });
-//   if (!res.ok) return [];
-//   const data = await res.json();
-//   return data.slice(0, 3); // Lấy 3 cái
-// }
+
 
 export default async function Home({
   searchParams,
