@@ -4,7 +4,7 @@ import Link from "next/link";
 async function getPosts(q?: string) {
   const url = q
     ? `${process.env.NEXT_PUBLIC_API_URL}/api/posts/?q=${encodeURIComponent(q)}`
-    : `${process.env.NEXT_PUBLIC_API_URL}/api/posts/api/posts/`;
+    : `${process.env.NEXT_PUBLIC_API_URL}/api/posts/`;
 
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) return [];
