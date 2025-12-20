@@ -10,16 +10,24 @@ async function getPosts(q?: string) {
   if (!res.ok) return [];
   return res.json();
 }
+async function getServices(q?: string) {
+  const url = q
+    ? `https://namtranngoc.pythonanywhere.com/api/posts/services/?q=${encodeURIComponent(q)}`
+    : `https://namtranngoc.pythonanywhere.com/api/posts/services/`;
 
-// 2. Hàm lấy dịch vụ (Thêm mới)
-async function getServices() {
-  const res = await fetch("https://namtranngoc.pythonanywhere.com/api/posts/services/", {
-    cache: "no-store",
-  });
+  const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) return [];
-  const data = await res.json();
-  return data.slice(0, 3); // Lấy 3 cái
+  return res.json();
 }
+// // 2. Hàm lấy dịch vụ (Thêm mới)
+// async function getServices() {
+//   const res = await fetch("https://namtranngoc.pythonanywhere.com/api/posts/services/", {
+//     cache: "no-store",
+//   });
+//   if (!res.ok) return [];
+//   const data = await res.json();
+//   return data.slice(0, 3); // Lấy 3 cái
+// }
 
 export default async function Home({
   searchParams,
