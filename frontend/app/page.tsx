@@ -1,26 +1,33 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
-// Hàm lấy bài viết
+// 1. Hàm lấy bài viết từ PythonAnywhere
 async function getPosts(q?: string) {
   const url = q
     ? `https://namtranngoc.pythonanywhere.com/api/posts/?q=${encodeURIComponent(q)}`
     : `https://namtranngoc.pythonanywhere.com/api/posts/`;
 
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) return [];
-  return res.json();
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return [];
+    return res.json();
+  } catch (error) {
+    return [];
+  }
 }
 
-// Hàm lấy dịch vụ (Đã sửa lỗi không nhận tham số q)
+// 2. Hàm lấy dịch vụ từ PythonAnywhere (Đã sửa để nhận q)
 async function getServices(q?: string) {
   const url = q
     ? `https://namtranngoc.pythonanywhere.com/api/services/?q=${encodeURIComponent(q)}`
     : `https://namtranngoc.pythonanywhere.com/api/services/`;
 
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) return [];
-  return res.json();
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return [];
+    return res.json();
+  } catch (error) {
+    return [];
+  }
 }
 
 export default async function Home({
@@ -30,21 +37,23 @@ export default async function Home({
 }) {
   const { q } = await searchParams;
 
-  // Gọi đồng thời cả 2 nguồn dữ liệu và truyền q vào cả 2
+  // Gọi đồng thời cả 2 nguồn dữ liệu dựa trên từ khóa tìm kiếm
   const [allPosts, allServices] = await Promise.all([getPosts(q), getServices(q)]);
+  
+  // Chỉ lấy 3 bài viết mới nhất cho trang chủ
   const posts = allPosts.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-white">
-      {/* 1. SCRIPT TỰ ĐỘNG CUỘN KHI CÓ TÌM KIẾM */}
+      {/* SCRIPT TỰ ĐỘNG CUỘN XUỐNG KHI NGƯỜI DÙNG TÌM KIẾM */}
       {q && (
         <script
           dangerouslySetInnerHTML={{
             __html: `
               window.onload = function() {
-                const element = document.getElementById('results-start');
-                if (element) {
-                  element.scrollIntoView({ behavior: 'smooth' });
+                const target = document.getElementById('results-area');
+                if (target) {
+                  target.scrollIntoView({ behavior: 'smooth' });
                 }
               }
             `,
@@ -69,7 +78,7 @@ export default async function Home({
 
           <div className="flex justify-center mt-16">
             <a
-              href="#results-start"
+              href="#results-area"
               className="group relative px-10 py-4 bg-blue-600 hover:bg-white text-white hover:text-blue-600 text-sm md:text-base font-bold uppercase tracking-widest transition-all duration-300 shadow-xl rounded-full overflow-hidden border-2 border-blue-600 hover:border-white"
             >
               <span className="relative z-10">Khám phá ngay</span>
@@ -79,14 +88,11 @@ export default async function Home({
         </div>
       </div>
 
-      {/* ĐIỂM NHẢY KHI TÌM KIẾM */}
-      <div id="results-start"></div>
+      {/* ĐIỂM DỪNG KHI NHẢY XUỐNG */}
+      <div id="results-area" className="pt-10"></div>
 
       {/* --- PHẦN DỊCH VỤ --- */}
-      <div
-        id="services-section"
-        className="max-w-[1400px] mx-auto px-4 sm:px-8 py-20 border-b border-gray-100"
-      >
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-20 border-b border-gray-100">
         <div className="mb-16 text-center">
           <h2 className="text-4xl md:text-5xl font-black text-gray-900 uppercase tracking-tighter">
             Dịch vụ của chúng tôi
@@ -99,56 +105,34 @@ export default async function Home({
             allServices.map((service: any) => (
               <Link
                 key={service.id}
-                // Sửa lỗi undefined: ưu tiên slug, nếu null thì dùng id
+                // SỬA LỖI UNDEFINED: dùng slug, nếu không có thì dùng id
                 href={`/services/${service.slug || service.id}`}
                 className="group relative block aspect-[3/4] overflow-hidden bg-black rounded-xl"
               >
                 <img
                   src={service.image}
                   alt={service.title}
-                  className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-out group-hover:scale-110 group-hover:opacity-50 transform-gpu"
+                  className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-out group-hover:scale-110 group-hover:opacity-50"
                 />
                 <div className="absolute inset-0 bg-blue-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                
                 <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 bg-gradient-to-t from-black/95 via-black/40 to-transparent transition-all duration-700 group-hover:opacity-0 group-hover:translate-y-10">
-                  <div className="mb-4">
-                    <span className="text-blue-400 text-[15px] font-black uppercase tracking-[0em]">
-                      Dịch vụ
-                    </span>
-                  </div>
-                  <h3 className="text-2xl md:text-2xl font-black text-white leading-[1] uppercase tracking-tighter mb-3">
-                    {service.title}
-                  </h3>
+                  <h3 className="text-2xl font-black text-white uppercase mb-3">{service.title}</h3>
                   <div className="flex items-center justify-between border-t border-white/30 pt-6">
-                    <span className="text-white text-[15px] font-black uppercase tracking-widest bg-blue-600 px-3 py-1 flex-shrink-0">
-                      Chi tiết
-                    </span>
-                  </div>
-                </div>
-
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                  <div className="text-center">
-                    <span className="border-2 border-white text-white px-8 py-3 font-bold uppercase tracking-[0.2em] text-sm backdrop-blur-sm">
-                      Xem dịch vụ
-                    </span>
+                    <span className="text-white text-[15px] font-black uppercase bg-blue-600 px-3 py-1">Chi tiết</span>
                   </div>
                 </div>
               </Link>
             ))
           ) : (
-            <div className="col-span-3 text-center py-20 text-gray-400 font-bold uppercase tracking-widest">
-              Không tìm thấy dịch vụ nào cho "{q}"
-            </div>
+            <div className="col-span-3 text-center py-10 text-gray-400 uppercase font-bold">Không tìm thấy dịch vụ nào cho "{q}"</div>
           )}
         </div>
       </div>
 
-      {/* --- DANH SÁCH BÀI VIẾT --- */}
-      <div id="posts-section" className="max-w-[1400px] mx-auto px-4 sm:px-8 py-20">
+      {/* --- PHẦN BÀI VIẾT --- */}
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-20">
         <div className="mb-16 text-center">
-          <h2 className="text-4xl md:text-5xl font-black text-gray-900 uppercase tracking-tighter">
-            Bài viết mới nhất
-          </h2>
+          <h2 className="text-4xl md:text-5xl font-black text-gray-900 uppercase tracking-tighter">Bài viết mới nhất</h2>
           <div className="h-2 w-32 bg-blue-600 mx-auto mt-4"></div>
         </div>
 
@@ -157,47 +141,28 @@ export default async function Home({
             {posts.map((post: any) => (
               <Link
                 key={post.id}
-                href={`/post/${post.slug}`}
+                href={`/post/${post.slug || post.id}`}
                 className="group relative block aspect-[3/4] overflow-hidden bg-black rounded-xl"
               >
                 <img
-                  src={post.image || "https://via.placeholder.com/800x1200"}
+                  src={post.image}
                   alt={post.title}
-                  className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-out group-hover:scale-110 group-hover:opacity-50 transform-gpu"
+                  className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-out group-hover:scale-110 group-hover:opacity-50"
                 />
-                <div className="absolute inset-0 bg-blue-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 bg-gradient-to-t from-black/95 via-black/40 to-transparent transition-all duration-700 group-hover:opacity-0 group-hover:translate-y-10">
-                  <div className="mb-4">
-                    <span className="text-blue-400 text-[15px] font-black uppercase tracking-[0em]">
-                      Bài viết
-                    </span>
-                  </div>
-                  <h3 className="text-2xl md:text-2xl font-black text-white leading-[1] uppercase tracking-tighter mb-3">
-                    {post.title}
-                  </h3>
+                  <h3 className="text-2xl font-black text-white uppercase mb-3">{post.title}</h3>
                   <div className="flex items-center justify-between border-t border-white/20 pt-6">
-                    <span className="text-gray-300 text-[15px] font-bold uppercase tracking-widest">
+                    <span className="text-gray-300 text-[15px] font-bold uppercase">
                       {new Date(post.created_at).toLocaleDateString("vi-VN")}
                     </span>
-                    <span className="text-white text-[15px] font-black uppercase tracking-widest bg-blue-600 px-3 py-1">
-                      Xem ngay
-                    </span>
-                  </div>
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                  <div className="text-center">
-                    <span className="border-2 border-white text-white px-8 py-3 font-bold uppercase tracking-[0.2em] text-sm backdrop-blur-sm">
-                      Đọc bài viết
-                    </span>
+                    <span className="text-white text-[15px] font-black uppercase bg-blue-600 px-3 py-1">Xem ngay</span>
                   </div>
                 </div>
               </Link>
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 text-gray-400 font-bold uppercase tracking-widest">
-            Không tìm thấy bài viết nào cho "{q}"
-          </div>
+          <div className="text-center py-20 text-gray-400 uppercase font-bold">Không tìm thấy bài viết nào cho "{q}"</div>
         )}
       </div>
     </div>
