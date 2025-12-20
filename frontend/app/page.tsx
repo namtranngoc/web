@@ -10,7 +10,8 @@ async function getPosts(q?: string) {
   if (!res.ok) return [];
   return res.json();
 }
-// Hàm lấy dịch vụ
+
+// 2. Hàm lấy dịch vụ (Đã thêm biến q để tìm kiếm nhảy)
 async function getServices(q?: string) {
   const url = q
     ? `https://namtranngoc.pythonanywhere.com/api/services/?q=${encodeURIComponent(q)}`
@@ -21,7 +22,6 @@ async function getServices(q?: string) {
   return res.json();
 }
 
-
 export default async function Home({
   searchParams,
 }: {
@@ -29,10 +29,11 @@ export default async function Home({
 }) {
   const { q } = await searchParams;
 
-  // Gọi song song cả 2 nguồn dữ liệu
-  const [allPosts, services] = await Promise.all([getPosts(q), getServices()]);
+  // LỖI CŨ CỦA ÔNG: getServices() trống -> SỬA THÀNH: getServices(q)
+  const [allPosts, allServices] = await Promise.all([getPosts(q), getServices(q)]);
 
   const posts = allPosts.slice(0, 3);
+  const services = allServices; // Lấy toàn bộ dịch vụ
 
   return (
     <div className="min-h-screen bg-white">
@@ -61,13 +62,9 @@ export default async function Home({
             </a>
           </div>
         </div>
-
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="w-1 h-12 bg-gradient-to-b from-blue-600 to-transparent"></div>
-        </div>
       </div>
 
-      {/* --- PHẦN DỊCH VỤ: HIỂN THỊ GIỐNG HỆT BÀI VIẾT --- */}
+      {/* --- PHẦN DỊCH VỤ: ĐÃ SỬA THÀNH THẺ LINK VÀ TRUYỀN SLUG --- */}
       <div
         id="services-section"
         className="max-w-[1400px] mx-auto px-4 sm:px-8 py-20 border-b border-gray-100"
@@ -80,54 +77,57 @@ export default async function Home({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {services.map((service: any) => (
-            <div
-              key={service.id}
-              className="group relative block aspect-[3/4] overflow-hidden bg-black rounded-xl cursor-pointer"
-            >
-              {/* 1. ẢNH NỀN FULL KHUNG */}
-              <img
-                src={service.image}
-                alt={service.title}
-                className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-out group-hover:scale-110 group-hover:opacity-50 transform-gpu"
-              />
+          {services.length > 0 ? (
+            services.map((service: any) => (
+              <Link
+                key={service.id}
+                href={`/services/${service.slug}`} // SỬA: Dùng thẻ Link và truyền Slug
+                className="group relative block aspect-[3/4] overflow-hidden bg-black rounded-xl cursor-pointer"
+              >
+                <img
+                  src={service.image}
+                  alt={service.title}
+                  className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-out group-hover:scale-110 group-hover:opacity-50 transform-gpu"
+                />
 
-              {/* 2. OVERLAY XANH KHI HOVER */}
-              <div className="absolute inset-0 bg-blue-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-blue-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-              {/* 3. NỘI DUNG CHỮ: TO VÀ BIẾN MẤT KHI HOVER */}
-              <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 bg-gradient-to-t from-black/95 via-black/40 to-transparent transition-all duration-700 group-hover:opacity-0 group-hover:translate-y-10">
-                <div className="mb-4">
-                  <span className="text-blue-400 text-[15px] font-black uppercase tracking-[0em]">
-                    Dịch vụ
-                  </span>
+                <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 bg-gradient-to-t from-black/95 via-black/40 to-transparent transition-all duration-700 group-hover:opacity-0 group-hover:translate-y-10">
+                  <div className="mb-4">
+                    <span className="text-blue-400 text-[15px] font-black uppercase tracking-[0em]">
+                      Dịch vụ
+                    </span>
+                  </div>
+
+                  <h3 className="text-2xl md:text-2xl font-black text-white leading-[1] uppercase tracking-tighter mb-3">
+                    {service.title}
+                  </h3>
+
+                  <div className="flex items-center justify-between border-t border-white/30 pt-6">
+                    <span className="text-white text-[15px] font-black uppercase tracking-widest bg-blue-600 px-3 py-1 flex-shrink-0">
+                      Chi tiết
+                    </span>
+                  </div>
                 </div>
 
-                <h3 className="text-2xl md:text-2xl font-black text-white leading-[1] uppercase tracking-tighter mb-3">
-                  {service.title}
-                </h3>
-
-                <div className="flex items-center justify-between border-t border-white/30 pt-6">
-                  <span className="text-white text-[15px] font-black uppercase tracking-widest bg-blue-600 px-3 py-1 flex-shrink-0">
-                    Chi tiết
-                  </span>
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                  <div className="text-center">
+                    <span className="border-2 border-white text-white px-8 py-3 font-bold uppercase tracking-[0.2em] text-sm backdrop-blur-sm">
+                      Xem dịch vụ
+                    </span>
+                  </div>
                 </div>
-              </div>
-
-              {/* 4. CHỮ HIỆN RA KHI HOVER */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                <div className="text-center">
-                  <span className="border-2 border-white text-white px-8 py-3 font-bold uppercase tracking-[0.2em] text-sm backdrop-blur-sm">
-                    Xem dịch vụ
-                  </span>
-                </div>
-              </div>
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-3 text-center py-10 text-gray-400 uppercase font-bold tracking-widest">
+              Không tìm thấy dịch vụ nào khớp với "{q}"
             </div>
-          ))}
+          )}
         </div>
       </div>
 
-      {/* --- DANH SÁCH BÀI VIẾT (GIỮ YÊN CODE CỦA ÔNG) --- */}
+      {/* --- DANH SÁCH BÀI VIẾT (GIỮ NGUYÊN) --- */}
       <div
         id="posts-section"
         className="max-w-[1400px] mx-auto px-4 sm:px-8 py-20"
@@ -183,7 +183,7 @@ export default async function Home({
           </div>
         ) : (
           <div className="text-center py-20 text-gray-400 font-bold uppercase tracking-widest">
-            Chưa có bài viết nào.
+            Không tìm thấy bài viết nào khớp với "{q}"
           </div>
         )}
       </div>
