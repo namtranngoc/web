@@ -12,8 +12,8 @@ async function getPosts(q?: string) {
 }
 async function getServices(q?: string) {
   const url = q
-    ? `https://namtranngoc.pythonanywhere.com/api/posts/services/?q=${encodeURIComponent(q)}`
-    : `https://namtranngoc.pythonanywhere.com/api/posts/services/`;
+    ? `https://namtranngoc.pythonanywhere.com/api/services/?q=${encodeURIComponent(q)}`
+    : `https://namtranngoc.pythonanywhere.com/api/services/`;
 
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) return [];
