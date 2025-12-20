@@ -20,4 +20,9 @@ class PostList(generics.ListAPIView):
 class ServiceList(generics.ListAPIView):
     queryset = Service.objects.all().order_by('order')
     serializer_class = ServiceSerializer
+
+# API CHI TIẾT DỊCH VỤ
+class ServiceDetail(generics.RetrieveAPIView):
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
     lookup_field = 'id'
