@@ -1,8 +1,8 @@
 // frontend/app/services/[id]/page.tsx
 
-async function getServiceDetail(id: string) {
+async function getServiceDetail(slug: string) {
   try {
-    const res = await fetch(`https://namtranngoc.pythonanywhere.com/api/services/${id}/`, {
+    const res = await fetch(`https://namtranngoc.pythonanywhere.com/api/services/${slug}/`, {
       cache: 'no-store',
     });
     if (!res.ok) return null;
