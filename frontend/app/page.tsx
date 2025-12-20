@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
-// 1. Hàm lấy bài viết
+// Hàm lấy bài viết
 async function getPosts(q?: string) {
   const url = q
     ? `https://namtranngoc.pythonanywhere.com/api/posts/?q=${encodeURIComponent(q)}`
@@ -11,7 +12,7 @@ async function getPosts(q?: string) {
   return res.json();
 }
 
-// 2. Hàm lấy dịch vụ (Đã thêm biến q để tìm kiếm nhảy)
+// Hàm lấy dịch vụ (Đã sửa lỗi không nhận tham số q)
 async function getServices(q?: string) {
   const url = q
     ? `https://namtranngoc.pythonanywhere.com/api/services/?q=${encodeURIComponent(q)}`
@@ -29,15 +30,29 @@ export default async function Home({
 }) {
   const { q } = await searchParams;
 
-  // LỖI CŨ CỦA ÔNG: getServices() trống -> SỬA THÀNH: getServices(q)
+  // Gọi đồng thời cả 2 nguồn dữ liệu và truyền q vào cả 2
   const [allPosts, allServices] = await Promise.all([getPosts(q), getServices(q)]);
-
   const posts = allPosts.slice(0, 3);
-  const services = allServices; // Lấy toàn bộ dịch vụ
 
   return (
     <div className="min-h-screen bg-white">
-      {/* --- HERO SECTION (GIỮ NGUYÊN) --- */}
+      {/* 1. SCRIPT TỰ ĐỘNG CUỘN KHI CÓ TÌM KIẾM */}
+      {q && (
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.onload = function() {
+                const element = document.getElementById('results-start');
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' });
+                }
+              }
+            `,
+          }}
+        />
+      )}
+
+      {/* --- HERO SECTION --- */}
       <div className="relative h-[65vh] w-full flex items-center justify-center overflow-hidden">
         <img
           src="home.png"
@@ -54,7 +69,7 @@ export default async function Home({
 
           <div className="flex justify-center mt-16">
             <a
-              href="#services-section"
+              href="#results-start"
               className="group relative px-10 py-4 bg-blue-600 hover:bg-white text-white hover:text-blue-600 text-sm md:text-base font-bold uppercase tracking-widest transition-all duration-300 shadow-xl rounded-full overflow-hidden border-2 border-blue-600 hover:border-white"
             >
               <span className="relative z-10">Khám phá ngay</span>
@@ -64,7 +79,10 @@ export default async function Home({
         </div>
       </div>
 
-      {/* --- PHẦN DỊCH VỤ: ĐÃ SỬA THÀNH THẺ LINK VÀ TRUYỀN SLUG --- */}
+      {/* ĐIỂM NHẢY KHI TÌM KIẾM */}
+      <div id="results-start"></div>
+
+      {/* --- PHẦN DỊCH VỤ --- */}
       <div
         id="services-section"
         className="max-w-[1400px] mx-auto px-4 sm:px-8 py-20 border-b border-gray-100"
@@ -77,32 +95,30 @@ export default async function Home({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {services.length > 0 ? (
-            services.map((service: any) => (
+          {allServices.length > 0 ? (
+            allServices.map((service: any) => (
               <Link
                 key={service.id}
-                href={`/services/${service.slug}`} // SỬA: Dùng thẻ Link và truyền Slug
-                className="group relative block aspect-[3/4] overflow-hidden bg-black rounded-xl cursor-pointer"
+                // Sửa lỗi undefined: ưu tiên slug, nếu null thì dùng id
+                href={`/services/${service.slug || service.id}`}
+                className="group relative block aspect-[3/4] overflow-hidden bg-black rounded-xl"
               >
                 <img
                   src={service.image}
                   alt={service.title}
                   className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-out group-hover:scale-110 group-hover:opacity-50 transform-gpu"
                 />
-
                 <div className="absolute inset-0 bg-blue-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
+                
                 <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 bg-gradient-to-t from-black/95 via-black/40 to-transparent transition-all duration-700 group-hover:opacity-0 group-hover:translate-y-10">
                   <div className="mb-4">
                     <span className="text-blue-400 text-[15px] font-black uppercase tracking-[0em]">
                       Dịch vụ
                     </span>
                   </div>
-
                   <h3 className="text-2xl md:text-2xl font-black text-white leading-[1] uppercase tracking-tighter mb-3">
                     {service.title}
                   </h3>
-
                   <div className="flex items-center justify-between border-t border-white/30 pt-6">
                     <span className="text-white text-[15px] font-black uppercase tracking-widest bg-blue-600 px-3 py-1 flex-shrink-0">
                       Chi tiết
@@ -120,18 +136,15 @@ export default async function Home({
               </Link>
             ))
           ) : (
-            <div className="col-span-3 text-center py-10 text-gray-400 uppercase font-bold tracking-widest">
-              Không tìm thấy dịch vụ nào khớp với "{q}"
+            <div className="col-span-3 text-center py-20 text-gray-400 font-bold uppercase tracking-widest">
+              Không tìm thấy dịch vụ nào cho "{q}"
             </div>
           )}
         </div>
       </div>
 
-      {/* --- DANH SÁCH BÀI VIẾT (GIỮ NGUYÊN) --- */}
-      <div
-        id="posts-section"
-        className="max-w-[1400px] mx-auto px-4 sm:px-8 py-20"
-      >
+      {/* --- DANH SÁCH BÀI VIẾT --- */}
+      <div id="posts-section" className="max-w-[1400px] mx-auto px-4 sm:px-8 py-20">
         <div className="mb-16 text-center">
           <h2 className="text-4xl md:text-5xl font-black text-gray-900 uppercase tracking-tighter">
             Bài viết mới nhất
@@ -183,7 +196,7 @@ export default async function Home({
           </div>
         ) : (
           <div className="text-center py-20 text-gray-400 font-bold uppercase tracking-widest">
-            Không tìm thấy bài viết nào khớp với "{q}"
+            Không tìm thấy bài viết nào cho "{q}"
           </div>
         )}
       </div>
