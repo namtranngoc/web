@@ -9,7 +9,7 @@ urlpatterns = [
     path('api/posts/', PostList.as_view()),
     path('api/services/', ServiceList.as_view()),
     # Thêm api/ vào trước để đồng bộ link gọi từ Frontend
-    path('api/services/<int:id>/', ServiceDetail.as_view(), name='service-detail'),
+    path('api/services/<slug:slug>/', ServiceDetail.as_view(), name='service-detail'),
 ]
 
 # Đưa dòng này ra ngoài if DEBUG để đảm bảo ảnh luôn hiện trên PythonAnywhere

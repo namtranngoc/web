@@ -1,8 +1,8 @@
 // frontend/app/services/[id]/page.tsx
 
-async function getServiceDetail(slug: string) {
+async function getServiceDetail(id: string) {
   try {
-    const res = await fetch(`https://namtranngoc.pythonanywhere.com/api/services/${slug}/`, {
+    const res = await fetch(`https://namtranngoc.pythonanywhere.com/api/services/${id}/`, {
       cache: 'no-store',
     });
     if (!res.ok) return null;
@@ -13,8 +13,8 @@ async function getServiceDetail(slug: string) {
   }
 }
 
-export default async function ServiceDetailPage({ params }: { params: { id: string } }) {
-  const service = await getServiceDetail(params.id);
+export default async function ServiceDetailPage({ params }: { params: { slug: string } }) {
+  const service = await getServiceDetail(params.slug);
 
   if (!service) {
     return <div className="p-10 text-center">Không tìm thấy dịch vụ hoặc lỗi kết nối.</div>;
