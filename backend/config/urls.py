@@ -3,6 +3,7 @@ from django.urls import path
 from blog.views import PostList, ServiceList # Import thêm ServiceList
 from django.conf import settings
 from django.conf.urls.static import static
+from blog.views import ServiceDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
