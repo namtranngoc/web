@@ -25,4 +25,4 @@ class ServiceList(generics.ListAPIView):
 class ServiceDetail(generics.RetrieveAPIView):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
-    lookup_field = 'id'
+    lookup_field = 'slug'
