@@ -13,7 +13,7 @@ async function getPosts(q?: string) {
 
 // 2. Hàm lấy dịch vụ (Thêm mới)
 async function getServices() {
-  const res = await fetch(`https://namtranngoc.pythonanywhere.com/api/posts/services/`, {
+  const res = await fetch("https://namtranngoc.pythonanywhere.com/api/posts/services/", {
     cache: "no-store",
   });
   if (!res.ok) return [];
