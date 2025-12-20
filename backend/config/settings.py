@@ -86,7 +86,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static') # Dòng này cực kỳ quan tr�
 # CORS - Thêm https:// cho đúng chuẩn
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://namtranngoc.pythonanywhere.com"
+    "https://namtranngoc.pythonanywhere.com",
+    "https://web-ten-pearl-79.vercel.app",
 ]
 
 # Media files
