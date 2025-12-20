@@ -29,5 +29,5 @@ class ServiceSerializer(serializers.ModelSerializer):
             request = self.context.get('request')
             if request:
                 return request.build_absolute_uri(obj.image.url)
-            return f"http://127.0.0.1:8000{obj.image.url}"
+            return obj.image.url
         return None
