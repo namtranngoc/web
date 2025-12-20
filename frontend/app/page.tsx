@@ -3,8 +3,8 @@ import Link from "next/link";
 // 1. Hàm lấy bài viết (Giữ nguyên)
 async function getPosts(q?: string) {
   const url = q
-    ? `http://127.0.0.1:8000/api/posts/?q=${encodeURIComponent(q)}`
-    : "http://127.0.0.1:8000/api/posts/";
+    ? `https://namtranngoc.pythonanywhere.com/api/posts/?q=${encodeURIComponent(q)}`
+    : "https://namtranngoc.pythonanywhere.com/api/posts/";
 
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) return [];
@@ -13,7 +13,7 @@ async function getPosts(q?: string) {
 
 // 2. Hàm lấy dịch vụ (Thêm mới)
 async function getServices() {
-  const res = await fetch("http://127.0.0.1:8000/api/services/", {
+  const res = await fetch("https://namtranngoc.pythonanywhere.com/api/services/", {
     cache: "no-store",
   });
   if (!res.ok) return [];

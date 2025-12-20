@@ -4,7 +4,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 async function getPost(slug: string) {
-  const res = await fetch(`http://127.0.0.1:8000/api/posts/`, { cache: 'no-store' });
+  const res = await fetch(`https://namtranngoc.pythonanywhere.com/api/posts/`, { cache: 'no-store' });
   const posts = await res.json();
   return posts.find((p: any) => p.slug === slug);
 }
