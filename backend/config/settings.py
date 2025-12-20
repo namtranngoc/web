@@ -87,7 +87,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static') # Dòng này cực kỳ quan tr�
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://namtranngoc.pythonanywhere.com",
-    "hhtps://web-namtrans-projects-6ec934ed.vercel.app/",
+    "hhtps://web-namtrans-projects-6ec934ed.vercel.app",
     
 ]
 
