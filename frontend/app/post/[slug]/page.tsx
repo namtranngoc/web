@@ -32,15 +32,15 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
         <Link href="/posts" className="text-blue-600 font-bold uppercase tracking-widest text-sm mb-4 block">
           ← TRỞ LẠI BLOG
         </Link>
-        <h1 className="text-4xl md:text-7xl font-bold italic leading-tight">{post.title}</h1>
+        <h1 className="text-2xl md:text-5xl font-bold italic leading-tight">{post.title}</h1>
       </header>
 
       {/* Ảnh đại diện (Thường lấy từ trường image riêng của API) */}
-      <figure className="max-w-4xl mx-auto mb-10">
+      <figure className="max-w-2xl mx-auto mb-10">
         <img src={post.image} className="w-full h-auto rounded shadow-xl" alt={post.title} />
       </figure>
 
-      <main className="max-w-3xl mx-auto pb-24">
+      <main className="max-w-2xl mx-auto pb-24">
         <div 
           className="prose prose-lg max-w-none blog-content"
           // Truyền nội dung đã được fix đường dẫn ảnh
