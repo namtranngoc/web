@@ -97,7 +97,9 @@ export default function RootLayout({
                       ? "/posts"
                       : item === "Dịch Vụ"
                       ? "/services"
-                      : "#"
+                      : item === "Liên Hệ"
+                      ? "/contact"
+                      :"#"
                   }
                   className="text-lg font-medium hover-bold-fix hover:text-blue-600 transition-all uppercase"
                 >
@@ -106,7 +108,7 @@ export default function RootLayout({
               ))}
             </div>
 
-            {/* MOBILE MENU BUTTON - ĐÃ SỬA LỖI TẠI ĐÂY */}
+            {/* MOBILE MENU BUTTON */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden flex flex-col justify-center items-center w-10 h-10 border border-gray-100 rounded-md bg-gray-50"
@@ -130,13 +132,13 @@ export default function RootLayout({
             </button>
           </div>
 
-          {/* MOBILE DROPDOWN - ĐÃ TỐI ƯU HIỆN THỊ */}
+          {/* MOBILE DROPDOWN */}
           <div
             className={`md:hidden absolute top-[72px] left-0 right-0 bg-white border-b border-gray-100 shadow-2xl transition-all duration-500 ease-in-out overflow-hidden ${
               isMenuOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
             }`}
           >
-            <div className="flex flex-col p-2 gap-5 text-center">
+            <div className="flex flex-col p-6 gap-3 text-center">
               {["Trang chủ", "Bài Viết", "Dịch Vụ", "Liên Hệ"].map((item) => (
                 <Link
                   key={item}
@@ -147,10 +149,12 @@ export default function RootLayout({
                       ? "/posts"
                       : item === "Dịch Vụ"
                       ? "/services"
+                      : item === "Liên Hệ"
+                      ? "/contact"
                       : "#"
                   }
                   onClick={() => setIsMenuOpen(false)}
-                  className="text-2xl font-black text-gray-900 uppercase hover:text-blue-600"
+                  className="text-1xl font-black text-gray-900 uppercase hover:text-blue-600"
                 >
                   {item}
                 </Link>
@@ -207,9 +211,14 @@ export default function RootLayout({
                         href={
                           link === "Trang chủ"
                             ? "/"
+                            : link === "Bài viết mới nhất"
+                            ? "/posts"
                             : link === "Dịch vụ"
                             ? "/services"
-                            : "/posts"
+                            : link === "Liên hệ hỗ trợ"
+                            ? "/contact"
+                            :"#"
+
                         }
                         className="hover:text-blue-600 transition-all hover:pl-2"
                       >
@@ -244,13 +253,8 @@ export default function RootLayout({
               </div>
             </div>
 
-            <div className="pt-10 border-t border-gray-100 text-center text-gray-400 font-black uppercase tracking-[0.3em] text-sm">
-              <p>© 2025 REAL MADRID CF BLOG — ALL RIGHTS RESERVED.</p>
-              <div className="mt-4 flex justify-center gap-8">
-                <span className="text-blue-600 underline underline-offset-8 decoration-2">
-                  HALA MADRID VAMOS!
-                </span>
-              </div>
+            <div className="pt-10 border-t border-gray-100 text-center text-gray-400 font-black uppercase text-sm">
+              <p>© Thiết kế web</p>
             </div>
           </div>
         </footer>

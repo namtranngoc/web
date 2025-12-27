@@ -11,7 +11,7 @@ async function getPosts(q?: string) {
   return res.json();
 }
 
-// 2. Hàm lấy dịch vụ (Đã thêm biến q để tìm kiếm dữ liệu nhảy)
+// 2. Hàm lấy dịch vụ
 async function getServices(q?: string) {
   const url = q
     ? `https://namtranngoc.pythonanywhere.com/api/services/?q=${encodeURIComponent(q)}`
@@ -35,21 +35,29 @@ export default async function Home({
 
   return (
     <div className="min-h-screen bg-white">
-      {/* --- LOGIC NHẢY (SCROLL) TÍCH HỢP THẲNG TẠI ĐÂY --- */}
+      {/* --- LOGIC NHẢY (SCROLL) KHI TÌM KIẾM --- */}
       {q && (
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {
-            window.addEventListener('load', function() {
+            const scrollToSection = () => {
               const element = document.getElementById('services-section');
               if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                setTimeout(() => {
+                  element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 150);
               }
-            });
+            };
+
+            if (document.readyState === 'complete') {
+              scrollToSection();
+            } else {
+              window.addEventListener('load', scrollToSection);
+            }
           })();
         `}} />
       )}
 
-      {/* --- HERO SECTION (GIỮ NGUYÊN) --- */}
+      {/* --- HERO SECTION --- */}
       <div className="relative h-[65vh] w-full flex items-center justify-center overflow-hidden">
         <img
           src="home.png"
@@ -76,59 +84,62 @@ export default async function Home({
         </div>
       </div>
 
-      {/* --- PHẦN DỊCH VỤ: ĐÃ SỬA LỖI UNDEFINED VÀ THÊM ID NHẢY --- */}
+      {/* --- PHẦN DỊCH VỤ --- */}
       <div
         id="services-section"
-        className="max-w-[1400px] mx-auto px-4 sm:px-8 py-20 border-b border-gray-100 scroll-mt-24"
+        className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-8 py-20 border-b border-gray-100 scroll-mt-24"
       >
-        <div className="mb-16 text-center">
-          <h2 className="text-4xl md:text-5xl font-black text-gray-900 uppercase tracking-tighter">
-            Dịch vụ của chúng tôi
+        <div className="mb-10 text-center">
+          <h2 className="text-2xl md:text-5xl font-black text-gray-900 uppercase tracking-tighter">
+            {q ? `Kết quả tìm kiếm cho: ${q}` : "Dịch vụ của chúng tôi"}
           </h2>
           <div className="h-2 w-32 bg-blue-600 mx-auto mt-4"></div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {services.map((service: any) => (
-            <Link
-              key={service.id}
-              // SỬA: Thay div bằng Link và dùng slug từ API
-              href={`/services/${service.slug}`}
-              className="group relative block aspect-[3/4] overflow-hidden bg-black rounded-xl cursor-pointer"
-            >
-              <img
-                src={service.image}
-                alt={service.title}
-                className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-out group-hover:scale-110 group-hover:opacity-50 transform-gpu"
-              />
-              <div className="absolute inset-0 bg-blue-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 bg-gradient-to-t from-black/95 via-black/40 to-transparent transition-all duration-700 group-hover:opacity-0 group-hover:translate-y-10">
-                <div className="mb-4">
-                  <span className="text-blue-400 text-[15px] font-black uppercase">
-                    Dịch vụ
+        {services.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {services.map((service: any) => (
+              <Link
+                key={service.id}
+                href={`/services/${service.slug}`}
+                className="group relative block aspect-[3/4] overflow-hidden bg-black rounded-xl cursor-pointer z-20"
+              >
+                <img
+                  src={service.image}
+                  alt={service.title}
+                  className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-out group-hover:scale-110 group-hover:opacity-50 transform-gpu"
+                />
+                <div className="absolute inset-0 bg-blue-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 bg-gradient-to-t from-black/95 via-black/40 to-transparent transition-all duration-700 group-hover:opacity-0 group-hover:translate-y-10 pointer-events-none">
+                  <div className="mb-4">
+                    <span className="text-blue-400 text-[15px] font-black uppercase">
+                      Dịch vụ
+                    </span>
+                  </div>
+                  <h3 className="text-1xl md:text-2xl font-black text-white leading-[1] uppercase mb-3">
+                    {service.title}
+                  </h3>
+                  <div className="flex items-center justify-between border-t border-white/30 pt-6">
+                    <span className="text-white text-[15px] font-black uppercase bg-blue-600 px-3 py-1">
+                      Chi tiết
+                    </span>
+                  </div>
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                  <span className="border-2 border-white text-white px-8 py-3 font-bold uppercase tracking-widest text-sm backdrop-blur-sm">
+                    Xem dịch vụ
                   </span>
                 </div>
-                <h3 className="text-2xl md:text-2xl font-black text-white leading-[1] uppercase mb-3">
-                  {service.title}
-                </h3>
-                <div className="flex items-center justify-between border-t border-white/30 pt-6">
-                  <span className="text-white text-[15px] font-black uppercase bg-blue-600 px-3 py-1">
-                    Chi tiết
-                  </span>
-                </div>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                <span className="border-2 border-white text-white px-8 py-3 font-bold uppercase tracking-widest text-sm backdrop-blur-sm">
-                  Xem dịch vụ
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-gray-400 font-bold uppercase py-10">Không tìm thấy dịch vụ nào.</p>
+        )}
       </div>
 
-      {/* --- DANH SÁCH BÀI VIẾT (GIỮ YÊN) --- */}
-      <div id="posts-section" className="max-w-[1400px] mx-auto px-4 sm:px-8 py-20">
+      {/* --- DANH SÁCH BÀI VIẾT: FIX LỖI KHÔNG BẤM ĐƯỢC --- */}
+      <div id="posts-section" className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-8 py-20">
         <div className="mb-16 text-center">
           <h2 className="text-4xl md:text-5xl font-black text-gray-900 uppercase tracking-tighter">
             Bài viết mới nhất
@@ -142,15 +153,24 @@ export default async function Home({
               <Link
                 key={post.id}
                 href={`/post/${post.slug}`}
-                className="group relative block aspect-[3/4] overflow-hidden bg-black rounded-xl"
+                /* QUAN TRỌNG: z-20 và relative để đảm bảo Link nằm trên cùng */
+                className="group relative block aspect-[3/4] overflow-hidden bg-black rounded-xl cursor-pointer z-20"
               >
                 <img
                   src={post.image || "https://via.placeholder.com/800x1200"}
                   alt={post.title}
                   className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 group-hover:opacity-50"
                 />
-                <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 bg-gradient-to-t from-black/95 via-black/40 to-transparent">
-                   <h3 className="text-2xl font-black text-white uppercase">{post.title}</h3>
+                
+                {/* pointer-events-none giúp click xuyên qua lớp gradient để chạm vào Link */}
+                <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 bg-gradient-to-t from-black/95 via-black/40 to-transparent transition-all duration-700 group-hover:opacity-0 group-hover:translate-y-10 pointer-events-none">
+                   <h3 className="text-1xl font-black text-white uppercase">{post.title}</h3>
+                </div>
+
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                  <span className="border-2 border-white text-white px-6 py-2 font-bold uppercase tracking-widest bg-black/20 backdrop-blur-sm">
+                    Tìm hiểu thêm
+                  </span>
                 </div>
               </Link>
             ))}

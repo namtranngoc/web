@@ -30,11 +30,11 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
         </div>
       </header>
 
-      <figure className="max-w-2xl mx-auto px-10 mb-10">
+      <figure className="max-w-2xl mx-auto px-5 mb-10">
         {post.image && (
           <img 
             src={post.image} 
-            className="w-full h-100px max-h-[full] object-contain shadow-2xl rounded-sm mx-auto" 
+            className="w-full h-200px max-h-[full] object-contain shadow-2xl rounded-sm mx-auto" 
             alt={post.title} 
           />
         )}
@@ -63,11 +63,6 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
             {post.content}
           </ReactMarkdown>
         </article>
-
-        <footer className="mt-20 pt-10 border-t flex justify-center gap-10">
-           <button className="italic uppercase text-[10px] tracking-widest underline underline-offset-8 hover:font-bold transition-all decoration-gray-300">Chia sẻ</button>
-           <Link href="/" className="italic uppercase text-[10px] tracking-widest underline underline-offset-8 hover:font-bold transition-all decoration-gray-300">Trang chủ</Link>
-        </footer>
       </main>
     </div>
   );

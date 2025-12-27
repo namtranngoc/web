@@ -2,22 +2,35 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation'; // Thêm dòng này
 
 export default function PostsPage() {
   const [posts, setPosts] = useState<any[]>([]);
   const [oldPosts, setOldPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  const searchParams = useSearchParams();
+  const q = searchParams.get('q'); // Lấy từ khóa tìm kiếm từ URL
 
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
       try {
-        const res = await fetch("https://namtranngoc.pythonanywhere.com/api/posts/", { cache: 'no-store' });
+        // Cập nhật URL API để gửi kèm tham số q
+        const apiUrl = q 
+          ? `https://namtranngoc.pythonanywhere.com/api/posts/?q=${encodeURIComponent(q)}`
+          : "https://namtranngoc.pythonanywhere.com/api/posts/";
+
+        const res = await fetch(apiUrl, { cache: 'no-store' });
         const data = await res.json();
         
         if (Array.isArray(data)) {
           setPosts(data);
-          const reversedData = [...data].reverse();
-          setOldPosts(reversedData.slice(0, 5));
+          // Chỉ cập nhật tin cũ hơn ở lần load đầu tiên (không có q) để sidebar ổn định
+          if (!q) {
+            const reversedData = [...data].reverse();
+            setOldPosts(reversedData.slice(0, 5));
+          }
         }
       } catch (e) {
         console.error("Lỗi lấy dữ liệu:", e);
@@ -26,12 +39,21 @@ export default function PostsPage() {
       }
     }
     fetchData();
-  }, []);
+  }, [q]); // Chạy lại mỗi khi q thay đổi
 
-  // HIỆU ỨNG REVEAL: BAY LÊN KHI CUỘN CHUỘT
+  // HIỆU ỨNG TỰ ĐỘNG CUỘN KHI TÌM KIẾM
+  useEffect(() => {
+    if (!loading && q && posts.length > 0) {
+      const target = document.getElementById('blog-content');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, [loading, q, posts]);
+
+  // HIỆU ỨNG REVEAL (Giữ nguyên của bạn)
   useEffect(() => {
     if (loading || posts.length === 0) return;
-
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -39,10 +61,8 @@ export default function PostsPage() {
         }
       });
     }, { threshold: 0.1 });
-
     const items = document.querySelectorAll('.reveal-item');
     items.forEach((el) => observer.observe(el));
-
     return () => observer.disconnect();
   }, [loading, posts]);
 
@@ -53,52 +73,55 @@ export default function PostsPage() {
       <div className="h-28"></div>
 
       <div className="max-w-[1400px] mx-auto px-6 py-12 font-serif">
-        <div className="mb-16 border-b-2 border-gray-200 pb-4 reveal-item">
-          <h1 className="text-4xl md:text-6xl font-black uppercase inline-block border-b-4 border-blue-600 pb-2">BLOG</h1>
+        <div id="blog-content" className="mb-16 border-b-2 border-gray-200 pb-4 reveal-item scroll-mt-32">
+          <h1 className="text-4xl md:text-6xl font-black uppercase inline-block border-b-4 border-blue-600 pb-2">
+            {q ? `KẾT QUẢ: ${q}` : "BLOG"}
+          </h1>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-16">
-          {/* CỘT TRÁI - DANH SÁCH BÀI VIẾT CHÍNH */}
           <div className="w-full lg:w-2/3 flex flex-col gap-12">
-            {posts.map((post: any) => (
-              <div key={post.id} className="reveal-item flex flex-col md:flex-row gap-10 items-start border-b border-gray-100 pb-12 last:border-none group">
-                
-                {/* 1. ẢNH NHỎ LẠI (200px) & HIỆU ỨNG HOVER */}
-                <Link 
-                  href={`/post/${post.slug}`} 
-                  className="w-full md:w-[200px] aspect-square flex-shrink-0 block overflow-hidden rounded-sm bg-black relative shadow-lg"
-                >
-                  <img 
-                    src={post.image} 
-                    alt={post.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-in-out group-hover:scale-125 group-hover:opacity-40"
-                  />
-                  {/* Lớp phủ xanh khi hover */}
-                  <div className="absolute inset-0 bg-blue-900/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center">
-                    <span className="text-white font-black uppercase text-[10px] tracking-[0.2em] border-2 border-white px-3 py-1">XEM</span>
-                  </div>
-                </Link>
-
-                {/* 2. NỘI DUNG CHỮ TO (BỎ XEM THÊM) */}
-                <div className="flex-1">
-                  <Link href={`/post/${post.slug}`} className="text-2xl md:text-3xl font-black hover:text-blue-600 uppercase block mb-4 leading-[1.1] transition-colors tracking-tighter">
-                    {post.title}
+            {posts.length > 0 ? (
+              posts.map((post: any) => (
+                <div key={post.id} className="reveal-item flex flex-col md:flex-row gap-10 items-start border-b border-gray-100 pb-12 last:border-none group">
+                  <Link 
+                    href={`/post/${post.slug}`} 
+                    className="w-full md:w-[200px] aspect-square flex-shrink-0 block overflow-hidden rounded-sm bg-black relative shadow-lg"
+                  >
+                    <img 
+                      src={post.image} 
+                      alt={post.title}
+                      className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-in-out group-hover:scale-125 group-hover:opacity-40"
+                    />
+                    <div className="absolute inset-0 bg-blue-900/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center">
+                      <span className="text-white font-black uppercase text-[10px] tracking-[0.2em] border-2 border-white px-3 py-1">XEM</span>
+                    </div>
                   </Link>
-                  <div className="flex items-center gap-4 mb-5">
-                    <span className="h-[2px] w-12 bg-blue-600"></span>
-                    <p className="text-gray-400 text-[11px] font-bold uppercase tracking-[0.3em]">
-                      Ngày {new Date(post.created_at).toLocaleDateString('vi-VN')}
+
+                  <div className="flex-1">
+                    <Link href={`/post/${post.slug}`} className="text-2xl md:text-3xl font-black hover:text-blue-600 uppercase block mb-4 leading-[1.1] transition-colors tracking-tighter">
+                      {post.title}
+                    </Link>
+                    <div className="flex items-center gap-4 mb-5">
+                      <span className="h-[2px] w-12 bg-blue-600"></span>
+                      <p className="text-gray-400 text-[11px] font-bold uppercase tracking-[0.3em]">
+                        Ngày {new Date(post.created_at).toLocaleDateString('vi-VN')}
+                      </p>
+                    </div>
+                    <p className="text-gray-600 text-lg leading-relaxed text-justify line-clamp-3">
+                      {post.summary}
                     </p>
                   </div>
-                  <p className="text-gray-600 text-lg leading-relaxed text-justify line-clamp-3">
-                    {post.summary}
-                  </p>
                 </div>
+              ))
+            ) : (
+              <div className="py-20 text-center text-gray-400 uppercase font-bold tracking-widest">
+                Không tìm thấy bài viết nào cho "{q}"
               </div>
-            ))}
+            )}
           </div>
 
-          {/* CỘT PHẢI (SIDEBAR) */}
+          {/* SIDEBAR (Giữ nguyên của bạn) */}
           <div className="w-full lg:w-1/3">
             <div className="sticky top-32">
               <h3 className="text-2xl font-black uppercase border-b-4 border-blue-600 w-fit pb-2 mb-10 reveal-item">Tin cũ hơn</h3>
@@ -119,7 +142,6 @@ export default function PostsPage() {
         </div>
       </div>
 
-      {/* CSS CHO HIỆU ỨNG REVEAL */}
       <style jsx global>{`
         .reveal-item {
           opacity: 0;

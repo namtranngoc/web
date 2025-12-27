@@ -51,7 +51,7 @@ export default async function ServicesPage({
           className="absolute inset-0 w-full h-full object-cover brightness-[0.3]"
         />
         <div className="relative z-10 text-center px-4">
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 uppercase tracking-tighter">
+          <h1 className="text-3xl md:text-7xl font-bold text-white mb-4 uppercase tracking-tighter">
             {q ? `Kết quả: ${q}` : "Dịch Vụ Của Chúng Tôi"}
           </h1>
           <div className="h-1.5 w-24 bg-blue-600 mx-auto"></div>
@@ -79,15 +79,11 @@ export default async function ServicesPage({
                 <div className="absolute inset-0 bg-blue-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                 <div className="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-all duration-700 group-hover:opacity-0 group-hover:translate-y-10">
-                  <h3 className="text-3xl font-black text-white leading-tight uppercase mb-4">
+                  <h3 className="text-1xl font-black text-white leading-tight uppercase mb-4">
                     {service.title}
                   </h3>
                   {/* HIỂN THỊ DESCRIPTION DẠNG HTML TỪ BACKEND */}
-                  <div 
-                    className="text-gray-300 text-sm mb-6 leading-relaxed line-clamp-2"
-                    dangerouslySetInnerHTML={{ __html: service.description }}
-                  />
-                  <div className="flex justify-between items-center border-t border-white/20 pt-4">
+                  <div className="flex justify-between items-center border-t border-white/20 pt-2">
                     <span className="text-blue-400 font-bold text-xs uppercase tracking-widest">
                       Chi tiết dịch vụ
                     </span>
