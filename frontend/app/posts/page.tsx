@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+export const dynamic = 'force-dynamic';
 
 // --- PHẦN 1: TÁCH RIÊNG COMPONENT CON CHỨA LOGIC ---
 // Component này "đụng chạm" đến useSearchParams nên phải đứng riêng
