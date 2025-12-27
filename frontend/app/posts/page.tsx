@@ -5,8 +5,6 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 export const dynamic = 'force-dynamic';
 
-// --- PHẦN 1: TÁCH RIÊNG COMPONENT CON CHỨA LOGIC ---
-// Component này "đụng chạm" đến useSearchParams nên phải đứng riêng
 function PostsContent() {
   const [posts, setPosts] = useState<any[]>([]);
   const [oldPosts, setOldPosts] = useState<any[]>([]);
@@ -42,7 +40,6 @@ function PostsContent() {
     fetchData();
   }, [q]);
 
-  // Hiệu ứng cuộn và reveal (Giữ nguyên của bạn)
   useEffect(() => {
     if (!loading && q && posts.length > 0) {
       const target = document.getElementById('blog-content');
@@ -93,9 +90,12 @@ function PostsContent() {
                       Ngày {new Date(post.created_at).toLocaleDateString('vi-VN')}
                     </p>
                   </div>
-                  <p className="text-gray-600 text-lg leading-relaxed text-justify line-clamp-3">
-                    {post.summary}
-                  </p>
+                  
+                  {/* SỬA TẠI ĐÂY: Dùng dangerouslySetInnerHTML để hiện in đậm trong tóm tắt */}
+                  <div 
+                    className="text-gray-600 text-lg leading-relaxed text-justify line-clamp-3 post-summary"
+                    dangerouslySetInnerHTML={{ __html: post.summary }}
+                  />
                 </div>
               </div>
             ))
@@ -124,12 +124,18 @@ function PostsContent() {
           </div>
         </div>
       </div>
+      
+      {/* THÊM CSS ĐỂ ÉP IN ĐẬM HIỆN RÕ */}
+      <style jsx>{`
+        :global(.post-summary b), :global(.post-summary strong) {
+          font-weight: 900 !important;
+          color: #000 !important;
+        }
+      `}</style>
     </div>
   );
 }
 
-// --- PHẦN 2: COMPONENT CHÍNH TRANG ---
-// Thành phần này PHẢI là export default và bọc component con trong Suspense
 export default function PostsPage() {
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
