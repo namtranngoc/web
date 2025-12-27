@@ -1,59 +1,64 @@
-import { Metadata } from 'next';
 import Link from 'next/link';
+import { Metadata } from 'next';
 
-// 1. Fetch dữ liệu trên Server (Tốt cho SEO)
 async function getPost(slug: string) {
-  const res = await fetch(`https://namtranngoc.pythonanywhere.com/api/posts/`, { cache: 'no-store' });
-  const posts = await res.json();
-  return posts.find((p: any) => p.slug === slug);
-}
-
-// 2. TẠO METADATA ĐỘNG (SEO CHỐT HẠ)
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
-  const post = await getPost(slug);
-
-  if (!post) return { title: "Không tìm thấy bài viết" };
-
-  return {
-    title: `${post.title} | Real Madrid Blog`,
-    description: post.summary?.replace(/<[^>]*>/g, '').slice(0, 160), // Xóa thẻ HTML cho mô tả chuẩn
-    openGraph: {
-      title: post.title,
-      description: post.summary?.replace(/<[^>]*>/g, ''),
-      images: [post.image || '/logo.png'],
-      type: 'article',
-    },
-  };
+  try {
+    const res = await fetch("https://namtranngoc.pythonanywhere.com/api/posts/", { cache: 'no-store' });
+    const posts = await res.json();
+    return posts.find((p: any) => p.slug === slug);
+  } catch (error) {
+    return null;
+  }
 }
 
 export default async function PostDetail({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = await getPost(slug);
 
-  if (!post) return <div className="py-40 text-center">Bài viết không tồn tại.</div>;
+  if (!post) return <div className="py-40 text-center">Không tìm thấy bài viết</div>;
+
+  // --- CÁCH FIX ẢNH TRIỆT ĐỂ ---
+  const domain = "https://namtranngoc.pythonanywhere.com";
+  
+  // Regex này sẽ tìm tất cả các thẻ src="/media/..." và thay bằng link tuyệt đối
+  const fixedContent = post.content.replace(
+    /src="\/media\//g, 
+    `src="${domain}/media/`
+  );
 
   return (
-    <article className="min-h-screen bg-white">
-      {/* Cấu trúc HTML Semantic: Dùng thẻ <header>, <article>, <time> */}
-      <header className="max-w-4xl mx-auto pt-32 md:pt-40 pb-12 px-5 text-center">
-        <h1 className="text-4xl md:text-7xl font-bold italic mb-6">{post.title}</h1>
-        <time className="text-gray-500">
-          Ngày {new Date(post.created_at).toLocaleDateString('vi-VN')}
-        </time>
+    <div className="min-h-screen bg-white pt-32 px-5 font-serif">
+      <header className="max-w-4xl mx-auto text-center mb-10">
+        <Link href="/posts" className="text-blue-600 font-bold uppercase tracking-widest text-sm mb-4 block">
+          ← TRỞ LẠI BLOG
+        </Link>
+        <h1 className="text-4xl md:text-7xl font-bold italic leading-tight">{post.title}</h1>
       </header>
 
-      <main className="max-w-3xl mx-auto pb-24 px-5">
+      {/* Ảnh đại diện (Thường lấy từ trường image riêng của API) */}
+      <figure className="max-w-4xl mx-auto mb-10">
+        <img src={post.image} className="w-full h-auto rounded shadow-xl" alt={post.title} />
+      </figure>
+
+      <main className="max-w-3xl mx-auto pb-24">
         <div 
           className="prose prose-lg max-w-none blog-content"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          // Truyền nội dung đã được fix đường dẫn ảnh
+          dangerouslySetInnerHTML={{ __html: fixedContent }} 
         />
       </main>
-      
+
       <style>{`
-        .blog-content strong, .blog-content b { font-weight: 900; color: #000; }
-        .blog-content h2 { font-size: 2rem; font-weight: 800; margin-top: 2rem; }
+        /* Đảm bảo ảnh trong bài viết không bị ẩn hoặc quá nhỏ */
+        .blog-content img {
+          display: block;
+          max-width: 100% !important;
+          height: auto !important;
+          margin: 2rem auto;
+          border-radius: 8px;
+        }
+        .blog-content b, .blog-content strong { font-weight: 900 !important; color: #000; }
       `}</style>
-    </article>
+    </div>
   );
 }
