@@ -2,7 +2,7 @@
 
 export default function ContactPage() {
   const CONTACT_INFO = {
-    address: "Santiago Bernabéu Stadium, Madrid, Spain",
+    address: "a",
     phone: "0123 456 789",
     zalo_link: "https://zalo.me/0123456789", 
     fb_link: "https://facebook.com/madridista.it",
@@ -41,7 +41,7 @@ export default function ContactPage() {
               <h3 className="text-2xl font-black uppercase border-l-4 border-blue-600 pl-5 text-gray-900">Thông tin trực tiếp</h3>
               
               <div className="flex items-start gap-6">
-                <div className="w-12 h-12 bg-black text-white flex items-center justify-center rounded-full font-bold shadow-lg shrink-0">A</div>
+                <div className="w-12 h-12 text-white flex items-center justify-center rounded-full font-bold shrink-0"><img src="address.png" alt="" /></div>
                 <div>
                   <p className="text-[10px] font-black uppercase text-blue-600 tracking-widest">Địa chỉ văn phòng</p>
                   <p className="text-xl font-bold uppercase text-gray-800">{CONTACT_INFO.address}</p>
@@ -49,7 +49,7 @@ export default function ContactPage() {
               </div>
 
               <div className="flex items-start gap-6">
-                <div className="w-12 h-12 bg-black text-white flex items-center justify-center rounded-full font-bold shadow-lg shrink-0">P</div>
+                <div className="w-12 h-12 text-white flex items-center justify-center rounded-full font-bold shrink-0"><img src="phone.png" alt="" /></div>
                 <div>
                   <p className="text-[10px] font-black uppercase text-blue-600 tracking-widest">Hotline hỗ trợ</p>
                   <p className="text-3xl font-black italic tracking-tighter text-gray-900">{CONTACT_INFO.phone}</p>
@@ -59,7 +59,7 @@ export default function ContactPage() {
 
             {/* KHU VỰC ICON DÙNG ẢNH FULL SÁT VIỀN */}
             <div className="pt-10 border-t border-gray-100">
-              <p className="text-[10px] font-black uppercase text-gray-400 mb-5 italic tracking-widest">Kết nối xã hội</p>
+              <p className="text-[15px] font-black uppercase text-gray-700 mb-5 italic tracking-widest">Liên hệ qua mạng xã hội</p>
               <div className="flex gap-6">
                 
                 {/* ICON ZALO */}
@@ -105,8 +105,6 @@ export default function ContactPage() {
                 
               </div>
             </div>
-
-            <p className="text-gray-300 text-[10px] uppercase tracking-[0.5em] italic mt-4">Hala Madrid y Nada Más</p>
           </div>
         </div>
       </div>

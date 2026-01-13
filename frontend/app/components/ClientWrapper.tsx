@@ -57,7 +57,7 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <button type="submit" className="absolute right-2 top-1">🔍</button>
+              <button type="submit" className="absolute right-2 top-2"><img src="search.svg" alt="" /></button>
             </form>
             <Link href="/" className="text-lg font-medium hover-bold-fix hover:text-blue-600 uppercase">Trang chủ</Link>
             <Link href="/posts" className="text-lg font-medium hover-bold-fix hover:text-blue-600 uppercase">Bài Viết</Link>
@@ -66,6 +66,16 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
           </div>
 
           {/* Nút Mobile Menu */}
+          <form onSubmit={handleSearch} className="relative group">
+              <input 
+                type="text" 
+                placeholder="Tìm bài viết..." 
+                className="pl-2 pr-10 py-1 border-b border-gray-200 outline-none w-40 focus:w-60 transition-all text-black"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <button type="submit" className="absolute right-2 top-2"><img src="search.svg" alt="" /></button>
+            </form>
           <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden flex flex-col justify-center items-center w-10 h-10 border border-gray-100 rounded-md bg-gray-50">
             <div className={`w-6 h-0.5 bg-blue-700 transition-all ${isMenuOpen ? "rotate-45 translate-y-2" : ""}`}></div>
             <div className={`w-6 h-0.5 bg-blue-700 my-1.5 ${isMenuOpen ? "opacity-0" : ""}`}></div>
