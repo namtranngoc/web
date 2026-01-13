@@ -49,16 +49,6 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
 
           {/* Menu Desktop */}
           <div className="hidden md:flex items-center gap-8">
-            <form onSubmit={handleSearch} className="relative group">
-              <input 
-                type="text" 
-                placeholder="Tìm bài viết..." 
-                className="pl-2 pr-10 py-1 border-b border-gray-200 outline-none w-40 focus:w-60 transition-all text-black"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              <button type="submit" className="absolute right-2 top-2"><img src="search.svg" alt="" /></button>
-            </form>
             <Link href="/" className="text-lg font-medium hover-bold-fix hover:text-blue-600 uppercase">Trang chủ</Link>
             <Link href="/posts" className="text-lg font-medium hover-bold-fix hover:text-blue-600 uppercase">Bài Viết</Link>
             <Link href="/services" className="text-lg font-medium hover-bold-fix hover:text-blue-600 uppercase">Dịch Vụ</Link>
